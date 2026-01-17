@@ -1,47 +1,74 @@
 import Link from "next/link";
 
-const posts = [
-  {
-    slug: "ai-overviews-vs-ai-mode",
-    title: "AI Overviews vs AI Mode",
-    excerpt:
-      "We analyzed over 1,500 queries to understand how AI citations differ.",
-    date: "Sep 5, 2025",
-    author: "TurboGecko Research",
-  },
-];
-
 export default function BlogPage() {
   return (
-    <div className="bg-light py-5">
-      <div className="container">
-        <h1 className="fw-bold mb-4">TurboGecko Blog</h1>
-
-        <div className="row">
-          {posts.map((post) => (
-            <div key={post.slug} className="col-md-6 mb-4">
-              <div className="card shadow-sm h-100">
-                <div className="card-body">
-                  <h4>{post.title}</h4>
-                  <p className="text-muted">{post.excerpt}</p>
-                  <small className="text-muted">
-                    {post.author} • {post.date}
-                  </small>
-
-                  <div className="mt-3">
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      className="btn btn-success btn-sm"
-                    >
-                      Read Article
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+    <>
+      {/* Hero */}
+      <section className="bg-light py-5">
+        <div className="container text-center">
+          <h1 className="fw-bold display-5">
+            SEO Insights & Growth Resources
+          </h1>
+          <p className="lead text-muted mt-3">
+            Learn how to grow traffic, conversions, and revenue through search.
+          </p>
         </div>
-      </div>
-    </div>
+      </section>
+
+      {/* Blog Grid */}
+      <section className="py-5">
+        <div className="container">
+          <div className="row g-4">
+            {[
+              {
+                title: "Citation Differences in AI Overviews vs AI Mode",
+                excerpt:
+                  "We analyzed how Google’s AI cites sources and what it means for SEO strategy.",
+                read: "6 min read",
+                slug: "ai-overviews-vs-ai-mode"
+              },
+              {
+                title: "How to Optimize for Answer Engines",
+                excerpt:
+                  "A practical framework to appear inside AI-powered search results.",
+                read: "5 min read",
+                slug: "answer-engine-optimization"
+              },
+              {
+                title: "Technical SEO Checklist for 2025",
+                excerpt:
+                  "A complete technical SEO checklist for modern websites.",
+                read: "7 min read",
+                slug: "technical-seo-checklist-2025"
+              }
+            ].map((post, i) => (
+              <div key={i} className="col-md-4">
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="text-decoration-none text-dark"
+                >
+                  <div className="card h-100 border-0 shadow-sm">
+                    <img
+                      src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f"
+                      className="card-img-top"
+                      alt={post.title}
+                    />
+                    <div className="card-body">
+                      <small className="text-muted">{post.read}</small>
+                      <h5 className="fw-bold mt-2">
+                        {post.title}
+                      </h5>
+                      <p className="text-muted">
+                        {post.excerpt}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
