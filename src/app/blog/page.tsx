@@ -1,6 +1,51 @@
 import Link from "next/link";
 
-export default function BlogPage() {
+type Post = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  date: string;
+};
+
+async function getPosts(): Promise<Post[]> {
+  const res = await fetch(
+    "https://lightgray-woodcock-892473.hostingersite.com/graphql",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: `
+          query GetPosts {
+            posts(first: 10) {
+              nodes {
+                id
+                title
+                slug
+                excerpt
+                date
+              }
+            }
+          }
+        `,
+      }),
+      cache: "no-store",
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch posts");
+  }
+
+  const json = await res.json();
+  return json.data.posts.nodes;
+}
+
+export default async function BlogPage() {
+  const posts = await getPosts();
+
   return (
     <>
       {/* Hero */}
@@ -19,30 +64,8 @@ export default function BlogPage() {
       <section className="py-5">
         <div className="container">
           <div className="row g-4">
-            {[
-              {
-                title: "Citation Differences in AI Overviews vs AI Mode",
-                excerpt:
-                  "We analyzed how Google’s AI cites sources and what it means for SEO strategy.",
-                read: "6 min read",
-                slug: "ai-overviews-vs-ai-mode"
-              },
-              {
-                title: "How to Optimize for Answer Engines",
-                excerpt:
-                  "A practical framework to appear inside AI-powered search results.",
-                read: "5 min read",
-                slug: "answer-engine-optimization"
-              },
-              {
-                title: "Technical SEO Checklist for 2025",
-                excerpt:
-                  "A complete technical SEO checklist for modern websites.",
-                read: "7 min read",
-                slug: "technical-seo-checklist-2025"
-              }
-            ].map((post, i) => (
-              <div key={i} className="col-md-4">
+            {posts.map((post) => (
+              <div key={post.id} className="col-md-4">
                 <Link
                   href={`/blog/${post.slug}`}
                   className="text-decoration-none text-dark"
@@ -54,12 +77,14 @@ export default function BlogPage() {
                       alt={post.title}
                     />
                     <div className="card-body">
-                      <small className="text-muted">{post.read}</small>
-                      <h5 className="fw-bold mt-2">
-                        {post.title}
-                      </h5>
+                      <small className="text-muted">
+                        {new Date(post.date).toDateString()}
+                      </small>
+                      <h5 className="fw-bold mt-2">{post.title}</h5>
                       <p className="text-muted">
-                        {post.excerpt}
+                        {post.excerpt
+                          ? post.excerpt.replace(/<[^>]+>/g, "")
+                          : "Read our latest insights on SEO, growth, and performance marketing."}
                       </p>
                     </div>
                   </div>
