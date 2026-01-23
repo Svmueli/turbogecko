@@ -1,8 +1,12 @@
-const WP_API = process.env.NEXT_PUBLIC_WP_API!;
+const WP_API = process.env.NEXT_PUBLIC_WP_API;
+
+if (!WP_API) {
+  throw new Error("NEXT_PUBLIC_WP_API is not defined");
+}
 
 export async function getPosts() {
   const res = await fetch(`${WP_API}/posts?_embed`, {
-    next: { revalidate: 60 }, // ISR
+    next: { revalidate: 60 },
   });
 
   if (!res.ok) {
@@ -13,9 +17,13 @@ export async function getPosts() {
 }
 
 export async function getPostBySlug(slug: string) {
+  if (!slug) return null;
+
   const res = await fetch(
     `${WP_API}/posts?slug=${slug}&_embed`,
-    { next: { revalidate: 60 } }
+    {
+      next: { revalidate: 60 },
+    }
   );
 
   if (!res.ok) {
@@ -23,5 +31,5 @@ export async function getPostBySlug(slug: string) {
   }
 
   const posts = await res.json();
-  return posts[0];
+  return posts[0] ?? null;
 }
