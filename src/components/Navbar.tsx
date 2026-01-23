@@ -24,7 +24,7 @@ export default function Navbar() {
               href="mailto:hello@turbogecko.co.ke"
               className="text-white text-decoration-none"
             >
-              ✉ hello@turbogecko.co.ke
+              ✉ hello@unlinkedlseo.co.ke
             </a>
           </div>
         </div>
@@ -35,7 +35,7 @@ export default function Navbar() {
         <div className="container">
           {/* Brand */}
           <Link href="/" className="navbar-brand fw-bold text-success fs-3">
-            TurboGecko
+            UnlinkedSEO
           </Link>
 
           {/* Mobile Toggle */}
