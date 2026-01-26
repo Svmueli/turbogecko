@@ -1,6 +1,20 @@
 import { notFound } from "next/navigation";
 import { getPostBySlug } from "@/wp-cms/lib/wordpress";
 
+export const dynamic = "force-dynamic";
+
+export async function generateStaticParams() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_WP_API}/posts`
+  );
+
+  const posts = await res.json();
+
+  return posts.map((post: any) => ({
+    slug: post.slug,
+  }));
+}
+
 type PageProps = {
   params: {
     slug: string;
