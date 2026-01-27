@@ -29,7 +29,7 @@ export async function getPostBySlug(slug: string) {
 
   const posts = await res.json();
   const post = posts[0] ?? null;
-  
+
   if (post && post.acf?.hero_image) {
     const mediaRes = await fetch(`${WP_API}/media/${post.acf.hero_image}`);
     if (mediaRes.ok) {
@@ -37,6 +37,50 @@ export async function getPostBySlug(slug: string) {
       post.acf.hero_image = media.source_url;
     }
   }
-  
+
   return post;
+}
+
+export async function getAuthor(authorId: number) {
+  const res = await fetch(`${WP_API}/users/${authorId}`, {
+    next: { revalidate: 3600 }, // cache longer
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+export async function getCategory(categoryId: number) {
+  const res = await fetch(`${WP_API}/categories/${categoryId}`, {
+    next: { revalidate: 3600 },
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+export async function getRelatedPosts(
+  categoryId: number,
+  currentPostId: number,
+  limit: number = 3,
+) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_WP_API}/posts?categories=${categoryId}&per_page=${limit + 1}&_fields=id,slug,title,date,author,acf,excerpt`,
+  );
+  const posts = await res.json();
+
+  console.log("Related posts fetched:", posts);
+
+  // Filter out current post and limit results
+  return posts.filter((post: any) => post.id !== currentPostId).slice(0, limit);
+}
+
+export async function getMediaUrl(mediaId: number): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_WP_API}/media/${mediaId}?_fields=source_url`,
+    );
+    const media = await res.json();
+    return media.source_url || null;
+  } catch {
+    return null;
+  }
 }
